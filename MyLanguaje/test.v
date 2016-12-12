@@ -1,12 +1,12 @@
 START
-	heroe = 9
-	hero
-	IF heroe # hero
-		PRINT "Hola mundo"
-		PRINT "Hola mundo"
-		PRINT "Hola mundo"
-		erick = 12
-		erick = INPUT
+	heroe = 9 + 9 * 2 + 4/2+6
+	hero = 3+2+heroe
+	PRINT hero
+	PRINT heroe
+	
+	IF hero # heroe
+		PRINT "Inserta un valor: "
+		
 	ENDIF
 	PRINT "Hello"
 	PRINT "HELL!!!"
