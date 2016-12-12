@@ -5,14 +5,18 @@ public class Parser
 {
 	int index = 0;
 	int tableIndex = 0;
-	int comp_1,comp_2;
+	String comp_1,comp_2;
 	int if_enter = 0;
+	int while_enter = 0;//while index
+	/*String while_comp_1 = "";
+	String while_comp_2 = "";*/
+	String while_comparador = "";
 	String str = "";
 	String str_aux = "";
 	Scanner scan = new Scanner(System.in);
-	//Token auxTok = new Token();
 	ArrayList<Token> tokenList = new ArrayList<Token>();
 	ArrayList<SymbolTable> symTable = new ArrayList<SymbolTable>();
+	ArrayList<Token> whileTable = new ArrayList<Token>();
 	Metodos met = new Metodos();
 	
 	public void parse(ArrayList<Token> tokens)
@@ -50,21 +54,7 @@ public class Parser
 		//System.out.println(symTable.get(tableIndex).getName() + " " + symTable.get(tableIndex).getValue());
 		tableIndex++;
 	}
-	//retorna valor entero de variable existente en tabla de simbolos
-	public int findInTable(Token tokenList)
-	{
-		int comp_1 = 0;
-		for(int i=0;i<tableIndex;i++)
-		{
-			if(symTable.get(i).getName().equals(tokenList.getData()))
-			{
-				//si existe saca valor de tabla de simbolos
-				comp_1 = Integer.parseInt(symTable.get(i).getValue());
-				return comp_1;
-			}
-		}	
-		return comp_1;
-	}
+
 	//retorna cadena de caracteres almacenada en variable existente en tabla de simbolos
 	public String stringInTable(Token tokenList)
 	{
@@ -84,9 +74,9 @@ public class Parser
 	public boolean Programa()
 	{
 		//Encontrar inicio de programa
-		if(tokenList.get(index).getData().contains("START") || if_enter == 1)
+		if(tokenList.get(index).getData().contains("START") || if_enter > 0 || while_enter > 0)
 		{
-			if(if_enter == 0)
+			if(if_enter == 0 && while_enter == 0)
 			{
 				index++;
 			}
@@ -123,12 +113,27 @@ public class Parser
 						}
 					}
 				}
-				else if(tokenList.get(index).getData().equals("ENDIF")&& if_enter == 1)
+				else if(tokenList.get(index).getData().equals("ENDIF")&& if_enter > 0)
 				{
-					if_enter = 0;
-					//index++;
+					//if_enter = 0;
+					index++;
+					//System.out.println(tokenList.get(index).getData());
 					//System.out.println(index + "end if");
 					return true;
+				}
+				else if(tokenList.get(index).getData().equals("ENDWHILE")&& while_enter > 0)
+				{
+					
+					//comp_1 = stringInTable(while_comp_1);
+					//comp_2 = stringInTable(while_comp_2);
+					if(Validacion(comp_1,while_comparador,comp_2))
+					{
+						return true;
+					}
+					else
+					{
+						return false;
+					}
 				}
 				//Verificar variable y asignaciones validas
 				else if(tokenList.get(index).getType().getName().contains("VARIABLE"))
@@ -154,16 +159,16 @@ public class Parser
 								if(tokenList.get(index).getType().getName().contains("VARIABLE"))
 								{
 									//System.out.println("YES");
-									comp_1 = findInTable(tokenList.get(index));//buscar que exista variable
+									comp_1 = stringInTable(tokenList.get(index));//buscar que exista variable
 									//System.out.println(comp_1);
 									//System.out.println(auxString);
-									if(comp_1==0)//si no hay nada error variable no declarada antes
+									if(comp_1.contains("n/a"))//si no hay nada error variable no declarada antes
 									{
 										System.out.println("Error variable not excist!!");
 										return false;
 									}
 									//System.out.println(tokenList.get(index).getData() + "here ");
-									auxString = auxString.concat(String.valueOf(comp_1));
+									auxString = auxString.concat(comp_1);
 								}
 								else
 								{
@@ -196,15 +201,15 @@ public class Parser
 							if(tokenList.get(index).getType().getName().contains("VARIABLE"))
 							{
 								//System.out.println("YES");
-								comp_1 = findInTable(tokenList.get(index));//buscar que exista variable
+								comp_1 = stringInTable(tokenList.get(index));//buscar que exista variable
 								//System.out.println(comp_1);
-								if(comp_1==0)//si no hay nada error variable no declarada antes
+								if(comp_1.contains("n/a"))//si no hay nada error variable no declarada antes
 								{
 									System.out.println("Error variable not excist!!");
 									return false;
 								}
 								//System.out.println(tokenList.get(index).getData() + "here ");
-								doAssign(str,String.valueOf(comp_1));
+								doAssign(str,comp_1);
 							}
 							else
 							{
@@ -246,8 +251,8 @@ public class Parser
 						//si es variable
 						if(tokenList.get(index).getType().getName().contains("VARIABLE"))
 						{
-							comp_1 = findInTable(tokenList.get(index));
-							if(comp_1==0)
+							comp_1 = stringInTable(tokenList.get(index));
+							if(comp_1.contains("n/a"))
 							{
 								System.out.println("Error variable not excist!!");
 								return false;
@@ -255,7 +260,7 @@ public class Parser
 						}
 						else
 						{
-							comp_1 = Integer.parseInt(tokenList.get(index).getData()); //guardar dato a comparar
+							comp_1 = tokenList.get(index).getData(); //guardar dato a comparar
 						}
 						index++;
 						//System.out.println(index);//3
@@ -269,8 +274,8 @@ public class Parser
 							{
 								if(tokenList.get(index).getType().getName().contains("VARIABLE"))
 								{
-									comp_2 = findInTable(tokenList.get(index));
-									if(comp_2 == 0)
+									comp_2 = stringInTable(tokenList.get(index));
+									if(comp_2.contains("n/a"))
 									{
 										System.out.println("Error variable not excist!!");
 										return false;
@@ -278,17 +283,18 @@ public class Parser
 								}
 								else
 								{
-									comp_2 = Integer.parseInt(tokenList.get(index).getData()); //guardar dato a comparar
+									comp_2 = tokenList.get(index).getData(); //guardar dato a comparar
 								}
 								index++;
 								if(Validacion(comp_1,str,comp_2))
 								{
-									if_enter = 1;
+									if_enter++;
 									if(Programa())
 									{
-										if_enter=0;
+										//if_enter=0;
+										if_enter--;
 										//index--;//parche
-										//System.out.println("End if");
+										//System.out.println(tokenList.get(index).getData());
 									}
 									//index++; //return
 									//System.out.println(index+ "nop");//13
@@ -306,6 +312,80 @@ public class Parser
 				{
 					return true;
 				}
+				else if(tokenList.get(index).getData().contains("WHILE"))
+				{
+					index++;
+					//System.out.println(index);//2
+					//System.out.println("YES");
+					if(Valor(tokenList.get(index).getType().getName()))
+					{
+						//System.out.println("YES");
+						//si es variable
+						if(tokenList.get(index).getType().getName().contains("VARIABLE"))
+						{
+							comp_1 = stringInTable(tokenList.get(index));
+							//while_comp_1 = comp_1;
+							if(comp_1.contains("n/a"))
+							{
+								System.out.println("Error variable not excist!!");
+								return false;
+							}
+						}
+						else
+						{
+							comp_1 = tokenList.get(index).getData(); //guardar dato a comparar
+						}
+						index++;
+						//System.out.println(index);//3
+						if(tokenList.get(index).getType().getName().contains("COMPARADOR"))
+						{
+							//System.out.println("YES");
+							str = tokenList.get(index).getData();//guardar comparador
+							index++;
+							//System.out.println(index);//4
+							if(Valor(tokenList.get(index).getType().getName()))
+							{
+								if(tokenList.get(index).getType().getName().contains("VARIABLE"))
+								{
+									comp_2 = stringInTable(tokenList.get(index));
+									//while_comp_2 = tokenList.get(index).getData();
+									if(comp_2.contains("n/a"))
+									{
+										System.out.println("Error variable not excist!!");
+										return false;
+									}
+								}
+								else
+								{
+								
+									comp_2 = tokenList.get(index).getData(); //guardar dato a comparar
+								
+								}
+								index++;
+								//verificar que condicion se cumpla
+								if(Validacion(comp_1,str,comp_2))
+								{
+									while_comparador = str;
+									while_enter++;
+									if(Programa())
+									{
+										//if_enter=0;
+										while_enter--;
+										//index--;//parche
+										//System.out.println("End if");
+									}
+									//index++; //return
+									//System.out.println(index+ "nop");//13
+								}
+								//else{return false;}
+							}
+							else{return false;}
+						}
+						else{return false;}
+					}
+					else{return false;}
+				}
+				else{return false;}
 				index++;//siguiente token
 			}//end while
 		}//end if start
@@ -342,8 +422,8 @@ public class Parser
 				{
 					if(tokenList.get(copyIndex).getType().getName().contains("VARIABLE"))
 					{
-						comp_1 = findInTable(tokenList.get(copyIndex));
-						auxStr = auxStr.concat(String.valueOf(comp_1));
+						comp_1 = stringInTable(tokenList.get(copyIndex));
+						auxStr = auxStr.concat(comp_1);
 						//System.out.println(auxStr);
 						
 					}
@@ -352,7 +432,6 @@ public class Parser
 						auxStr = auxStr.concat(tokenList.get(copyIndex).getData());
 						//System.out.println(auxStr);
 					}
-					//copyIndex++;
 				}
 				else
 				{
@@ -384,12 +463,33 @@ public class Parser
 	}
 	
 	//verificar si la condicion se cumple
-	public boolean Validacion(int comp_1, String comparador, int comp_2)
+	public boolean Validacion(String comp_1, String comparador, String comp_2)
 	{
 		//System.out.println("Validando");
+		float num_1,num_2;
+		if(comp_1.indexOf('.')>=0)
+		{
+			float x = Float.parseFloat(comp_1);
+			num_1 = x;
+		}
+		else
+		{
+			int x = Integer.parseInt(comp_1);
+			num_1 = x;
+		}
+		if(comp_2.indexOf('.')>=0)
+		{
+			float y = Float.parseFloat(comp_1);
+			num_2 = y;
+		}
+		else
+		{
+			int y = Integer.parseInt(comp_1);
+			num_2 = y;
+		}
 		if(comparador.equals("<"))
 		{
-			if(comp_1 < comp_2)
+			if(num_1 < num_2)
 			{
 				return true;
 			}
@@ -408,7 +508,7 @@ public class Parser
 		}
 		if(comparador.equals("#"))
 		{
-			if(comp_1 == comp_2)
+			if(num_1 == num_2)
 			{
 				return true;
 			}
@@ -427,7 +527,7 @@ public class Parser
 		}
 		if(comparador.equals(">"))
 		{
-			if(comp_1 > comp_2)
+			if(num_1 > num_2)
 			{
 				return true;
 			}

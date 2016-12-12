@@ -1,13 +1,19 @@
 START
-	heroe = 9 + 9 * 2 + 4/2+6
-	hero = 3+2+heroe
-	PRINT hero
+	heroe = 9.3 + 9 * 2 + 4/2+6
+	hero = heroe
 	PRINT heroe
-	
-	IF hero # heroe
-		PRINT "Inserta un valor: "
+	IF 9 # 9
+		IF hero # heroe
+			PRINT "Inserta algo: "
+			erick = INPUT
+		ENDIF
+		-
+		
+		PRINT erick
 		
 	ENDIF
-	PRINT "Hello"
-	PRINT "HELL!!!"
+	-
+	
+	PRINT "Hola"
+	
 END
