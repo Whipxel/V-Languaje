@@ -3,8 +3,8 @@ public class vLexer extends Lexer {
 		tokenTypes.add(new TokenType("INICIO", "START"));
 		tokenTypes.add(new TokenType("IF", "IF"));
 		tokenTypes.add(new TokenType("ENDIF", "ENDIF"));
-		tokenTypes.add(new TokenType("WHILE", "WHILE"));
-		tokenTypes.add(new TokenType("ENDWHILE", "ENDWHILE"));
+		tokenTypes.add(new TokenType("LOOP", "LOOP"));
+		tokenTypes.add(new TokenType("ENDLOOP", "ENDLOOP"));
 		tokenTypes.add(new TokenType("FIN", "END"));
 		tokenTypes.add(new TokenType("INPUT", "INPUT"));
 		tokenTypes.add(new TokenType("PRINT", "PRINT"));

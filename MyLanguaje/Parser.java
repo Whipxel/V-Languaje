@@ -7,16 +7,17 @@ public class Parser
 	int tableIndex = 0;
 	String comp_1,comp_2;
 	int if_enter = 0;
-	int while_enter = 0;//while index
-	/*String while_comp_1 = "";
-	String while_comp_2 = "";*/
-	String while_comparador = "";
+	int loop_enter = 0;
+	int loop_index=0;
+	int loop_end_index = 0;
+	Token loop_comp_1;
+	Token loop_comp_2;
+	String loop_comparador = "";
 	String str = "";
 	String str_aux = "";
 	Scanner scan = new Scanner(System.in);
 	ArrayList<Token> tokenList = new ArrayList<Token>();
 	ArrayList<SymbolTable> symTable = new ArrayList<SymbolTable>();
-	ArrayList<Token> whileTable = new ArrayList<Token>();
 	Metodos met = new Metodos();
 	
 	public void parse(ArrayList<Token> tokens)
@@ -74,9 +75,9 @@ public class Parser
 	public boolean Programa()
 	{
 		//Encontrar inicio de programa
-		if(tokenList.get(index).getData().contains("START") || if_enter > 0 || while_enter > 0)
+		if(tokenList.get(index).getData().contains("START") || if_enter > 0 || loop_enter > 0)
 		{
-			if(if_enter == 0 && while_enter == 0)
+			if(if_enter == 0 && loop_enter == 0)
 			{
 				index++;
 			}
@@ -121,17 +122,36 @@ public class Parser
 					//System.out.println(index + "end if");
 					return true;
 				}
-				else if(tokenList.get(index).getData().equals("ENDWHILE")&& while_enter > 0)
+				else if(tokenList.get(index).getData().equals("ENDLOOP")&& loop_enter > 0)
 				{
-					
-					//comp_1 = stringInTable(while_comp_1);
-					//comp_2 = stringInTable(while_comp_2);
-					if(Validacion(comp_1,while_comparador,comp_2))
+					loop_end_index = index;
+					if(loop_comp_1.getType().getName().contains("VARIABLE"))
 					{
+						comp_1 = stringInTable(loop_comp_1);
+					}
+					else
+					{
+						comp_1 = loop_comp_1.getData();
+					}
+					if(loop_comp_2.getType().getName().contains("VARIABLE"))
+					{
+						comp_2 = stringInTable(loop_comp_2);
+					}
+					else
+					{
+						comp_2 = loop_comp_2.getData();
+					}
+					
+					if(Validacion(comp_1,loop_comparador,comp_2))
+					{
+						System.out.println("YES");
+						index = loop_index;
 						return true;
 					}
 					else
 					{
+						loop_enter--;
+						index = loop_end_index;
 						return false;
 					}
 				}
@@ -312,7 +332,8 @@ public class Parser
 				{
 					return true;
 				}
-				else if(tokenList.get(index).getData().contains("WHILE"))
+				//Enunciado es un ciclo while
+				else if(tokenList.get(index).getData().contains("LOOP"))
 				{
 					index++;
 					//System.out.println(index);//2
@@ -324,7 +345,6 @@ public class Parser
 						if(tokenList.get(index).getType().getName().contains("VARIABLE"))
 						{
 							comp_1 = stringInTable(tokenList.get(index));
-							//while_comp_1 = comp_1;
 							if(comp_1.contains("n/a"))
 							{
 								System.out.println("Error variable not excist!!");
@@ -335,20 +355,22 @@ public class Parser
 						{
 							comp_1 = tokenList.get(index).getData(); //guardar dato a comparar
 						}
+						loop_comp_1 = tokenList.get(index);
 						index++;
 						//System.out.println(index);//3
 						if(tokenList.get(index).getType().getName().contains("COMPARADOR"))
 						{
 							//System.out.println("YES");
 							str = tokenList.get(index).getData();//guardar comparador
+							loop_comparador = str;
 							index++;
 							//System.out.println(index);//4
 							if(Valor(tokenList.get(index).getType().getName()))
 							{
+								//System.out.println("YES");
 								if(tokenList.get(index).getType().getName().contains("VARIABLE"))
 								{
 									comp_2 = stringInTable(tokenList.get(index));
-									//while_comp_2 = tokenList.get(index).getData();
 									if(comp_2.contains("n/a"))
 									{
 										System.out.println("Error variable not excist!!");
@@ -357,22 +379,23 @@ public class Parser
 								}
 								else
 								{
-								
-									comp_2 = tokenList.get(index).getData(); //guardar dato a comparar
-								
+									comp_2 = tokenList.get(index).getData(); //guardar segundo dato a comparar
 								}
+								loop_comp_2 = tokenList.get(index);
 								index++;
+								loop_index=index;
 								//verificar que condicion se cumpla
+								//System.out.println("YES");
 								if(Validacion(comp_1,str,comp_2))
 								{
-									while_comparador = str;
-									while_enter++;
+									loop_enter++;
+									//System.out.println("YES");
 									if(Programa())
 									{
-										//if_enter=0;
-										while_enter--;
+										loop_enter--;
+										//System.out.println(tokenList.get(index).getData());
 										//index--;//parche
-										//System.out.println("End if");
+										//System.out.println("End while");
 									}
 									//index++; //return
 									//System.out.println(index+ "nop");//13
