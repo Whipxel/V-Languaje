@@ -314,11 +314,14 @@ public class Parser
 										//if_enter=0;
 										if_enter--;
 										//index--;//parche
+										//index++;
 										//System.out.println(tokenList.get(index).getData());
 									}
 									//index++; //return
 									//System.out.println(index+ "nop");//13
 								}
+								//index++;
+								//System.out.println(tokenList.get(index).getData());
 								//else{return false;}
 							}
 							else{return false;}
@@ -397,7 +400,8 @@ public class Parser
 										//index--;//parche
 										//System.out.println("End while");
 									}
-									//index++; //return
+									index++; //return
+									System.out.println(tokenList.get(index).getData());
 									//System.out.println(index+ "nop");//13
 								}
 								//else{return false;}
@@ -490,8 +494,11 @@ public class Parser
 	{
 		//System.out.println("Validando");
 		float num_1,num_2;
-		if(comp_1.indexOf('.')>=0)
+		int rev = comp_1.indexOf(".");
+		int rev2 = comp_2.indexOf(".");
+		if(rev>0)
 		{
+			//System.out.println("YESS");
 			float x = Float.parseFloat(comp_1);
 			num_1 = x;
 		}
@@ -500,20 +507,23 @@ public class Parser
 			int x = Integer.parseInt(comp_1);
 			num_1 = x;
 		}
-		if(comp_2.indexOf('.')>=0)
+		if(rev2>0)
 		{
-			float y = Float.parseFloat(comp_1);
+			//System.out.println("YESS");
+			float y = Float.parseFloat(comp_2);
 			num_2 = y;
 		}
 		else
 		{
-			int y = Integer.parseInt(comp_1);
+			int y = Integer.parseInt(comp_2);
 			num_2 = y;
 		}
 		if(comparador.equals("<"))
 		{
+			//System.out.println("Reprobado");
 			if(num_1 < num_2)
 			{
+				//System.out.println("Reprobado");
 				return true;
 			}
 			else

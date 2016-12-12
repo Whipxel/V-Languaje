@@ -1,25 +1,42 @@
 START
-	heroe = 3
-	hero = 1
-	PRINT heroe
-	IF 9 # 9
+	heroe = 9
+	itera = 0
+	
+	
+	IF 9 # heroe
 		
-		hero = 1 + 1+2
-		LOOP 1 < 4	
-			PRINT "hello"
-			PRINT "hello"
-			PRINT "hello"
-			PRINT "hello"
-			PRINT "hello"
-			PRINT "Insertar dato"
+			PRINT "Inserta numero: "
 			erick = INPUT
-			hero = hero + 1
-		ENDLOOP
+			
+			prom = erick
+			
+			PRINT "Inserta numero: "
+			erick = INPUT
+			prom= prom+ erick
+			
+			PRINT "Inserta numero: "
+			erick = INPUT
+			prom= prom+ erick
+			
+			
+			prom = prom/3
+			
+			PRINT "Tu promedio es de: "
+			PRINT prom
+			PRINT "Revisando..."
+			
+		IF prom < 59.9
+			PRINT "Que paso!?"
+			PRINT "Reprobado"
+		ENDIF
+		-
+		
+		IF prom > 59.9
+		PRINT "PASASTE!!"
+		ENDIF
+		-
 		
 	ENDIF
-	
-	
-	PRINT "Hola"
-	PRINT hero
+	-
 	
 END
